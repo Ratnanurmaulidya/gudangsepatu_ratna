@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\pabrik;
+use App\Models\nota_transaksi;
 use Illuminate\Http\Request;
 
-class PabrikController extends Controller
+class NotaTransaksiController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class PabrikController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(pabrik $pabrik)
+    public function show(nota_transaksi $nota_transaksi)
     {
         //
     }
@@ -42,7 +42,7 @@ class PabrikController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(pabrik $pabrik)
+    public function edit(nota_transaksi $nota_transaksi)
     {
         //
     }
@@ -50,7 +50,7 @@ class PabrikController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, pabrik $pabrik)
+    public function update(Request $request, nota_transaksi $nota_transaksi)
     {
         //
     }
@@ -58,7 +58,7 @@ class PabrikController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(pabrik $pabrik)
+    public function destroy(nota_transaksi $nota_transaksi)
     {
         //
     }

@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('transaksis', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamp('tanggal_transaksi');
+            $table->decimal('total', 10, 2);
             $table->timestamps();
         });
     }

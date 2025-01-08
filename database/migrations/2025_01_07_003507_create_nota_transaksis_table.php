@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tokos', function (Blueprint $table) {
+        Schema::create('nota_transaksis', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('transaksi_id')->constrained()->onDelete('cascade');
+            $table->foreignId('sepatu_id')->constrained()->onDelete('cascade');
+            $table->integer('jumlah');
+            $table->decimal('subtotal', 10, 2);
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tokos');
+        Schema::dropIfExists('nota_transaksis');
     }
 };
