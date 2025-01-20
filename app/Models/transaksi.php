@@ -10,8 +10,11 @@ class transaksi extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
         'tanggal_transaksi',
-        'total'
+        'jenis_transaksi',
+        'nama',
+        'jumlah_stok',
+        'keterangan'
     ];
+        protected $primaryKey = 'id'; // Sesuaikan jika berbeda
 }

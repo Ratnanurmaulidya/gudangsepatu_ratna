@@ -11,7 +11,6 @@ class Sepatu extends Model
 
     protected $fillable = [
         'nama',
-        'harga',
         'stok'
     ];
 }

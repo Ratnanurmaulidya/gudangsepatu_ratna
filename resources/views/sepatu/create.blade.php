@@ -23,10 +23,6 @@
                 <label for="nama_sepatu" class="form-label">Nama Barang</label>
                 <input type="text" name="nama" id="nama" class="form-control" required>
             </div>
-            <div class="mb-3">
-                <label for="harga" class="form-label">Harga Barang</label>
-                <input type="number" name="harga" id="harga" class="form-control" required>
-            </div>
 
             <div class="mb-3">
                 <label for="stok" class="form-label">Stok Barang</label>

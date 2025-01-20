@@ -35,7 +35,6 @@ class SepatuController extends Controller
         //Validasi input, memastikan 'sepatu' dan jumlahnya ada dalam request
         $validated = $request->validate([
             'nama.*' => 'required|string|max:255',
-            'harga.*' => 'required|integer',
             'stok.*' => 'required|integer',
         ]);
 
@@ -43,7 +42,6 @@ class SepatuController extends Controller
          Sepatu::create([
             'nama' => $request->nama,
             'stok' => $request->stok,
-            'harga' => $request->harga
          ]);
 
             // Mengarahkan kembali dengan pesan sukses
@@ -61,25 +59,24 @@ class SepatuController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(sepatu $sepatu)
+    public function edit($id)
     {
-         // Mengambil data sepatu berdasarkan ID
-         $sepatu = Sepatu::findOrFail($id);
+        // Temukan data sepatu berdasarkan ID
+        $sepatu = Sepatu::findOrFail($id);
 
-         // Menampilkan form edit dengan data sepatu
-         return view('sepatu.edit', compact('sepatu'));
+        // Kirim data ke view
+        return view('sepatu.edit', compact('sepatu'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, sepatu $sepatu)
+    public function update(Request $request, $id)
     {
         // Validasi data yang masuk
         $request->validate([
             'nama' => 'required|string|max:255',
             'stok' => 'required|integer|min:1',
-            'harga' => 'required|numeric|min:1000',
         ]);
 
         // Mencari sepatu berdasarkan ID
@@ -89,7 +86,6 @@ class SepatuController extends Controller
         $sepatu->update([
             'nama' => $request->nama,
             'stok' => $request->stok,
-            'harga' => $request->harga,
         ]);
 
         // Mengarahkan kembali dengan pesan sukses
@@ -99,7 +95,7 @@ class SepatuController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(sepatu $sepatu)
+    public function destroy(request $request, $id)
     {
         // Mencari sepatu berdasarkan ID
         $sepatu = Sepatu::findOrFail($id);
@@ -109,5 +105,13 @@ class SepatuController extends Controller
 
         // Mengarahkan kembali dengan pesan sukses
         return redirect()->route('sepatu.index')->with('success', 'Sepatu berhasil dihapus!');
+    }
+    public function print($id)
+    {
+       // Temukan data sepatu berdasarkan ID
+        $sepatu = Sepatu::findOrFail($id);
+
+       // Misal, kembalikan ke view print khusus
+       return view('sepatu.print', compact('sepatu'));
     }
 }

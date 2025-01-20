@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\transaksi;
+use App\Models\Transaksi;
+use App\Models\User;
+use App\Models\Sepatu;
 use Illuminate\Http\Request;
 
 class TransaksiController extends Controller
@@ -36,109 +38,76 @@ class TransaksiController extends Controller
      */
     public function store(Request $request)
     {
-        // Validasi input untuk memastikan data yang dikirim valid
-        $validated = $request->validate([
-            'sepatu.*' => 'required|integer|min:1',  // Validasi jumlah sepatu yang dibeli
+        $request->validate([
+            'tanggal_transaksi' => 'required|date',
+            'jenis_transaksi' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
+            'jumlah_stok' => 'required|integer',
+            'keterangan' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
         ]);
 
-        // Membuat transaksi baru untuk user yang sedang login
-        $transaksi = Transaksi::create([
-            'user_id' => auth()->id(),  // Ambil ID user yang sedang login
-            'tanggal_transaksi' => now(),  // Waktu transaksi saat ini
-            'total' => 0  // Total transaksi, diupdate setelah nota transaksi dibuat
-        ]);
+        // Buat transaksi baru
+    $transaksi = Transaksi::create($request->all());
 
-        // Variabel untuk menyimpan total harga transaksi
-        $total = 0;
-
-        // Proses pembelian untuk setiap sepatu yang dibeli
-        foreach ($request->sepatu as $sepatu_id => $jumlah) {
-            // Ambil data sepatu berdasarkan ID
-            $sepatu = Sepatu::find($sepatu_id);
-
-            // Pastikan stok sepatu cukup untuk transaksi
-            if ($sepatu && $sepatu->stok >= $jumlah) {
-                // Hitung subtotal untuk sepatu ini
-                $subtotal = $sepatu->harga * $jumlah;
-
-                // Simpan data nota transaksi untuk sepatu ini
-                NotaTransaksi::create([
-                    'transaksi_id' => $transaksi->id,  // Menghubungkan nota dengan transaksi
-                    'sepatu_id' => $sepatu_id,         // Menghubungkan nota dengan sepatu yang dibeli
-                    'jumlah' => $jumlah,               // Jumlah sepatu yang dibeli
-                    'subtotal' => $subtotal,           // Subtotal harga sepatu
-                ]);
-
-                // Tambahkan subtotal ke total transaksi
-                $total += $subtotal;
-
-                // Kurangi stok sepatu yang terjual
-                $sepatu->stok -= $jumlah;
-                $sepatu->save(); // Simpan perubahan stok
+    // Update jumlah stok berdasarkan jenis transaksi
+    $sepatu = Sepatu::where('nama', $request->nama)->first();
+    if ($sepatu) {
+        if ($request->jenis_transaksi == 'Masuk') {
+            $sepatu->stok += $request->jumlah_stok;
+        } elseif ($request->jenis_transaksi == 'Keluar') {
+            if ($sepatu->stok >= $request->jumlah_stok) {
+                $sepatu->stok -= $request->jumlah_stok;
             } else {
-                // Jika stok tidak cukup, kembalikan dengan error
-                return back()->withErrors(['error' => 'Stok sepatu tidak mencukupi untuk transaksi ini.']);
+                return redirect()->back()->withErrors(['error' => 'Stok tidak mencukupi untuk transaksi keluar.']);
             }
         }
-
-        // Update total transaksi setelah semua nota ditambahkan
-        $transaksi->update(['total' => $total]);
-
-        // Redirect ke halaman transaksi dengan pesan sukses
-        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil');
+        $sepatu->save();
+    } else {
+        return redirect()->back()->withErrors(['error' => 'Barang tidak ditemukan.']);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(transaksi $transaksi)
-    {
-        // Ambil transaksi berdasarkan ID
-        $transaksi = Transaksi::findOrFail($id);
-
-        // Pastikan transaksi milik user yang sedang login
-        if ($transaksi->user_id != auth()->id()) {
-            abort(403);  // Unauthorized access
-        }
-
-        // Ambil semua nota transaksi yang terkait dengan transaksi ini
-        $nota_transaksis = $transaksi->notaTransaksis;
-
-        // Menampilkan halaman detail transaksi
-        return view('transaksi.show', compact('transaksi', 'nota_transaksis'));
+    return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil ditambahkan.');
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(transaksi $transaksi)
+    public function edit(Transaksi $transaksi)
     {
-        //
+        \Log::info('Data transaksi:', $transaksi->toArray());
+        return view('transaksi.edit', compact('transaksi'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, transaksi $transaksi)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'tanggal_transaksi' => 'required|date',
+            'jenis_transaksi' => 'required|string|max:255',
+            'nama' => 'required|string|max:255',
+            'jumlah_stok' => 'required|integer',
+            'keterangan' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $transaksi = Transaksi::findOrFail($id);
+        \Log::info($transaksi);
+        $transaksi->update($request->all());
+
+        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(transaksi $transaksi)
+    public function destroy($id)
     {
-        $this->authorize('delete', $transaksi);
-
-        // Kembalikan stok sepatu
-        foreach ($transaksi->notaTransaksis as $nota) {
-            $sepatu = $nota->sepatu;
-            $sepatu->stok += $nota->jumlah;
-            $sepatu->save();
-        }
-
+        $transaksi = Transaksi::findOrFail($id);
         $transaksi->delete();
-        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus!');
+
+        return redirect()->route('transaksi.index')->with('success', 'Transaksi berhasil dihapus.');
     }
 }

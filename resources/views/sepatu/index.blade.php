@@ -30,59 +30,60 @@
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <!-- Header -->
-        <div class="header-container text-center">
-            <h1>Gudang Sepatu</h1>
-            <p>Kelola data sepatu dengan mudah dan cepat!</p>
-        </div>
-
-        <!-- Tabel Data Sepatu -->
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">Daftar Sepatu</h3>
+    <div class="content">
+        <div class="container mt-4">
+            <!-- Header -->
+            <div class="header-container text-center">
+                <h1>Gudang Sepatu</h1>
+                <p>Kelola data sepatu dengan mudah dan cepat!</p>
             </div>
-            <div class="card-body">
-                @if (isset($sepatu) && !$sepatu->isEmpty())
-                    <table class="table table-bordered table-hover">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Nama</th>
-                                <th>Harga</th>
-                                <th>Stok</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($sepatu as $item)
+
+            <!-- Tabel Data Sepatu -->
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Daftar Sepatu</h3>
+                </div>
+                <div class="card-body">
+                    @if (isset($sepatu) && !$sepatu->isEmpty())
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
                                 <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $item->nama }}</td>
-                                    <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
-                                    <td>{{ $item->stok }}</td>
-                                    <td>
-                                        <a href="{{ route('sepatu.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                                        <form action="{{ route('sepatu.destroy', $item->id) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</button>
-                                        </form>
-                                    </td>
+                                    <th>#</th>
+                                    <th>Nama</th>
+                                    <th>Stok</th>
+                                    <th>Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <p class="text-center">Belum ada data sepatu yang tersedia. Klik tombol <b>Tambah Data Sepatu</b> untuk menambahkan.</p>
-                @endif
+                            </thead>
+                            <tbody>
+                                @foreach ($sepatu as $item)
+                                    <tr>
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $item->nama }}</td>
+                                        <td>{{ $item->stok }}</td>
+                                        <td>
+                                            <a href="{{ route('sepatu.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                            <a href="{{ route('sepatu.print', $item->id) }}" class="btn btn-sm btn-info">Cetak</a>
+                                            <form action="{{ route('sepatu.destroy', $item->id) }}" method="POST" style="display: inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus data ini?')">Hapus</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <p class="text-center">Belum ada data sepatu yang tersedia. Klik tombol <b>Tambah Data Sepatu</b> untuk menambahkan.</p>
+                    @endif
+                </div>
             </div>
-        </div>
 
-        <!-- Tombol Tambah Data -->
-        <div class="text-center mt-4">
-        <a href="{{ route('sepatu.create') }}" class="btn btn-lg btn-success shadow">+ Tambah Data Sepatu</a>
-
+            <!-- Tombol Tambah Data dan Kembali -->
+            <div class="text-center mt-4">
+                <a href="{{ route('sepatu.create') }}" class="btn btn-lg btn-success shadow">+ Tambah Data Sepatu</a>
+                <a href="{{ route('home') }}" class="btn btn-lg btn-secondary shadow">Kembali</a>
+            </div>
         </div>
     </div>
 

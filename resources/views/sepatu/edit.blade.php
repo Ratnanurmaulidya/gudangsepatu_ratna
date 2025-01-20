@@ -29,14 +29,6 @@
             </div>
 
             <div class="mb-3">
-                <label for="harga" class="form-label">Harga Sepatu</label>
-                <input type="number" class="form-control @error('harga') is-invalid @enderror" id="harga" name="harga" value="{{ old('harga', $sepatu->harga) }}" required>
-                @error('harga')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="mb-3">
                 <label for="stok" class="form-label">Stok Sepatu</label>
                 <input type="number" class="form-control @error('stok') is-invalid @enderror" id="stok" name="stok" value="{{ old('stok', $sepatu->stok) }}" required>
                 @error('stok')

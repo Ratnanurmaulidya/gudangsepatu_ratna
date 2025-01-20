@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('sepatus', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->integer('harga');
             $table->integer('stok');
             $table->timestamps();
         });
